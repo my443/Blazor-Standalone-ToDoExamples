@@ -1,10 +1,16 @@
-﻿@page "/todolist"
+﻿@page "/listwithdate"
 @using ToDo.Client.Data
 @using ToDo.Client.Models
 
-<h3>Simple Todo List</h3>
+<h3>List With Date</h3>
 <button @onclick="AddItem">Add Item</button>
 <button @onclick="DeleteItem">Delete Item</button>
+<InputDate id="datepicker" @bind-Value="SelectedDate" class="form-control" style="width:200px"/>
+<button @onclick="SetPreviousDay">Previous Day</button>
+<button @onclick="SetToday">Today</button>
+<button @onclick="SetNextDay">Next Day</button>
+
+
 <table>
     @foreach (var item in ToDoItems)
     {
@@ -13,7 +19,7 @@
             <td><InputText @bind-Value="item.Title" /></td>
             <td>
                 <InputRadioGroup @bind-Value="SelectedItemId" Name="Selected">
-                    <InputRadio Value="@item.Id" /> Select
+                    <InputRadio Value="@item.Id" />
                 </InputRadioGroup>
             </td>
         </tr>
@@ -33,19 +39,22 @@
     private AppDbContext context = new AppDbContext();
     private List<ToDoItem> ToDoItems;
     private int? SelectedItemId;
+    private DateTime SelectedDate;
 
     private ToDoItem SelectedItem;
 
     protected override async Task OnInitializedAsync()
     {
         ToDoItems = context.ToDoItems;
+        SelectedDate = DateTime.Now;
         SelectFirstItem();
+
     }
 
     private void AddItem()
     {
         // int newId = ToDoItems.Max(item => item.Id) + 1;
-        int newId = ToDoItems.Select(item => item.Id).DefaultIfEmpty().Max() +1;
+        int newId = ToDoItems.Select(item => item.Id).DefaultIfEmpty().Max() + 1;
 
         ToDoItem newItem = new ToDoItem
             {
@@ -68,8 +77,21 @@
         StateHasChanged();
     }
 
-    private void SelectFirstItem() { 
+    private void SelectFirstItem()
+    {
         SelectedItemId = ToDoItems.Any() ? ToDoItems.Min(item => (int?)item.Id) : null; // Select the first item
+    }
+
+    private void SetPreviousDay() {
+        SelectedDate = SelectedDate.AddDays(-1);
+    }
+
+    private void SetNextDay() {
+        SelectedDate = SelectedDate.AddDays(1);
+    }
+
+    public void SetToday(){
+        SelectedDate = DateTime.Now;
     }
 
 }

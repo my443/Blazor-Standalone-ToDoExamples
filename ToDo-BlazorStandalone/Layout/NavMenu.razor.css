@@ -80,4 +80,12 @@
         height: calc(100vh - 3.5rem);
         overflow-y: auto;
     }
+
+    .nowrap {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block; /* Ensures the ellipsis works properly */
+        max-width: 150px; /* Adjust width as needed */
+    }
 }
