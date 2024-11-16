@@ -1,0 +1,75 @@
+﻿@page "/todolist"
+@using ToDo.Client.Data
+@using ToDo.Client.Models
+
+<h3>Simple Todo List</h3>
+<button @onclick="AddItem">Add Item</button>
+<button @onclick="DeleteItem">Delete Item</button>
+<table>
+    @foreach (var item in ToDoItems)
+    {
+        <tr>
+            <td><InputCheckbox @bind-Value="item.IsDone" /></td>
+            <td><InputText @bind-Value="item.Title" /></td>
+            <td>
+                <InputRadioGroup @bind-Value="SelectedItemId" Name="Selected">
+                    <InputRadio Value="@item.Id" /> Select
+                </InputRadioGroup>
+            </td>
+        </tr>
+    }
+</table>
+
+<p>Selected Item ID: @SelectedItemId</p>
+<h4>Items</h4>
+
+<ul>
+    @foreach (var item in ToDoItems)
+    {
+        <li>@item.Id / @item.Title / @item.IsDone</li>
+    }
+</ul>
+@code {
+    private AppDbContext context = new AppDbContext();
+    private List<ToDoItem> ToDoItems;
+    private int? SelectedItemId;
+
+    private ToDoItem SelectedItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ToDoItems = context.ToDoItems;
+        SelectFirstItem();
+    }
+
+    private void AddItem()
+    {
+        // int newId = ToDoItems.Max(item => item.Id) + 1;
+        int newId = ToDoItems.Select(item => item.Id).DefaultIfEmpty().Max() +1;
+
+        ToDoItem newItem = new ToDoItem
+            {
+                Id = newId,
+                Title = "New Item",
+                IsDone = false
+            };
+
+        ToDoItems.Add(newItem);
+        StateHasChanged();
+    }
+
+
+
+    private void DeleteItem()
+    {
+        ToDoItem itemToDelete = ToDoItems.FirstOrDefault(item => item.Id == SelectedItemId.Value);
+        ToDoItems.Remove(itemToDelete);
+        SelectFirstItem();
+        StateHasChanged();
+    }
+
+    private void SelectFirstItem() { 
+        SelectedItemId = ToDoItems.Any() ? ToDoItems.Min(item => (int?)item.Id) : null; // Select the first item
+    }
+
+}
