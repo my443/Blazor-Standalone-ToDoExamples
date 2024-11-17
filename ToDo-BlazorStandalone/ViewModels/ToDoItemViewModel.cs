@@ -10,10 +10,21 @@ namespace ToDo.Client.ViewModels
         public List<ToDoItem> ToDoItems;
         public List<ToDoItem> CurrentDayItems;
 
-        private ToDoItem SelectedItem;
-        public int? SelectedItemId;
-        private DateOnly _selectedDate;
 
+
+        private DateOnly _selectedDate;
+        private ToDoItem _selectedItem;
+        private int? _selectedItemId;
+
+        public ToDoItem SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                if (_selectedItem != value)
+                { _selectedItem = value; }
+            }
+        }
 
         public DateOnly SelectedDate
         {
@@ -28,7 +39,17 @@ namespace ToDo.Client.ViewModels
             }
         }
 
-        public ToDoItemViewModel() {
+        public int? SelectedItemId
+        {
+            get { return _selectedItemId; }
+            set {
+                _selectedItemId = value;
+                SelectItem();
+            }
+        }
+
+        public ToDoItemViewModel()
+        {
             _selectedDate = DateOnly.FromDateTime(DateTime.Now);
             SelectedDate = DateOnly.FromDateTime(DateTime.Now);
             ToDoItems = context.ToDoItems;
@@ -58,6 +79,10 @@ namespace ToDo.Client.ViewModels
 
             ToDoItems.Add(newItem);
             UpdateCurrentDayData();
+
+            // So that it chooses the one you just added.       
+            SelectedItemId = newId;
+            SelectItem();
         }
 
         public void DeleteItem()

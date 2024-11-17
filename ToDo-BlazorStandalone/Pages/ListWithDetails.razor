@@ -26,17 +26,18 @@
         </tr>
     }
 </table>
+<p>Selected Item ID: @ViewModel.SelectedItemId</p>
 
 <h4>Details Of Selected Item</h4>
+<InputTextArea @bind-Value="ViewModel.SelectedItem.Details">@ViewModel.SelectedItem.Details</InputTextArea>
 
 
-<p>Selected Item ID: @ViewModel.SelectedItemId</p>
 <h4>Items</h4>
 
 <ul>
     @foreach (var item in ViewModel.ToDoItems)
     {
-        <li>@item.Id / @item.Title / @item.IsDone // @item.ItemDate</li>
+        <li>@item.Id / @item.Title / @item.IsDone // @item.ItemDate // @item.Details</li>
     }
 </ul>
 @code {
