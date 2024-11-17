@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public string Title { get; set; }
         public string Details{ get; set; }
+        public DateOnly ItemDate { get; set; }
         public bool IsDone { get; set; }
     }
 }

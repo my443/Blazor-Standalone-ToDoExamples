@@ -12,7 +12,7 @@
 
 
 <table>
-    @foreach (var item in ToDoItems)
+    @foreach (var item in CurrentDayItems)
     {
         <tr>
             <td><InputCheckbox @bind-Value="item.IsDone" /></td>
@@ -32,66 +32,92 @@
 <ul>
     @foreach (var item in ToDoItems)
     {
-        <li>@item.Id / @item.Title / @item.IsDone</li>
+        <li>@item.Id / @item.Title / @item.IsDone // @item.ItemDate</li>
     }
 </ul>
 @code {
     private AppDbContext context = new AppDbContext();
     private List<ToDoItem> ToDoItems;
+    private List<ToDoItem> CurrentDayItems;
     private int? SelectedItemId;
-    private DateTime SelectedDate;
+    private DateOnly _selectedDate;
+
+    private DateOnly SelectedDate
+    {
+        get => _selectedDate;
+        set
+        {
+            if (_selectedDate != value)
+            {
+                _selectedDate = value;
+                UpdateCurrentDayData(); // Call your function here
+            }
+        }
+    }
+
 
     private ToDoItem SelectedItem;
 
     protected override async Task OnInitializedAsync()
     {
+        _selectedDate = DateOnly.FromDateTime(DateTime.Now);
+        SelectedDate = DateOnly.FromDateTime(DateTime.Now);
         ToDoItems = context.ToDoItems;
-        SelectedDate = DateTime.Now;
+        CurrentDayItems = ToDoItems.Where(t => t.ItemDate == SelectedDate).ToList();
         SelectFirstItem();
-
     }
 
     private void AddItem()
     {
-        // int newId = ToDoItems.Max(item => item.Id) + 1;
-        int newId = ToDoItems.Select(item => item.Id).DefaultIfEmpty().Max() + 1;
+        int newId = GetNextId();
 
         ToDoItem newItem = new ToDoItem
             {
                 Id = newId,
                 Title = "New Item",
-                IsDone = false
+                IsDone = false,
+                ItemDate = SelectedDate
             };
 
         ToDoItems.Add(newItem);
-        StateHasChanged();
+        UpdateCurrentDayData();
     }
-
-
 
     private void DeleteItem()
     {
         ToDoItem itemToDelete = ToDoItems.FirstOrDefault(item => item.Id == SelectedItemId.Value);
         ToDoItems.Remove(itemToDelete);
         SelectFirstItem();
-        StateHasChanged();
+        UpdateCurrentDayData();
+
     }
 
+    private int GetNextId() { 
+        return ToDoItems.Select(item => item.Id).DefaultIfEmpty().Max() + 1;
+    }
     private void SelectFirstItem()
     {
-        SelectedItemId = ToDoItems.Any() ? ToDoItems.Min(item => (int?)item.Id) : null; // Select the first item
+        SelectedItemId = ToDoItems.Any() ? CurrentDayItems.Min(item => (int?)item.Id) : null; // Select the first item
     }
 
     private void SetPreviousDay() {
         SelectedDate = SelectedDate.AddDays(-1);
+        UpdateCurrentDayData();
     }
 
     private void SetNextDay() {
         SelectedDate = SelectedDate.AddDays(1);
+        UpdateCurrentDayData();
     }
 
     public void SetToday(){
-        SelectedDate = DateTime.Now;
+        SelectedDate = DateOnly.FromDateTime(DateTime.Now);
+        UpdateCurrentDayData();
     }
 
+    public void UpdateCurrentDayData(){
+        CurrentDayItems = ToDoItems.Where(t => t.ItemDate == SelectedDate).ToList();
+        SelectFirstItem();
+        StateHasChanged();
+    }
 }
