@@ -19,19 +19,22 @@ namespace ToDo.Client.Data
 
             for (int i = 0; i < 4; i++)
             {
-                ToDoItem item = new ToDoItem { Id = i + 1, Title = "First Item", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)) };
+                int idnumber = i + 1;
+                ToDoItem item = new ToDoItem { Id = idnumber, Title = $"Item with id {idnumber}", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now.AddDays(-1)) };
                 ToDoItems.Add(item);
             }
 
             for (int i = 0; i < 5; i++)
             {
-                ToDoItem item = new ToDoItem { Id = i + 5, Title = "First Item", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now) };
+                int idnumber = i + 5;
+                ToDoItem item = new ToDoItem { Id = idnumber, Title = $"Item with id {idnumber}", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now) };
                 ToDoItems.Add(item);
             }
 
             for (int i = 0; i < 3; i++)
             {
-                ToDoItem item = new ToDoItem { Id = i + 10, Title = "First Item", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1)) };
+                int idnumber = i + 10;
+                ToDoItem item = new ToDoItem { Id = i + 10, Title = $"Item with id {idnumber}", IsDone = false, ItemDate = DateOnly.FromDateTime(DateTime.Now.AddDays(1)) };
                 ToDoItems.Add(item);
             }
 
