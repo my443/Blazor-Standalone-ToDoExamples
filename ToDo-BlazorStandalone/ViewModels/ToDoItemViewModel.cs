@@ -36,6 +36,14 @@ namespace ToDo.Client.ViewModels
             SelectFirstItem();
         }
 
+        public void SelectItem()
+        {
+            if (SelectedItemId.HasValue)
+            {
+                SelectedItem = ToDoItems.FirstOrDefault(item => item.Id == SelectedItemId.Value);
+            }
+        }
+
         public void AddItem()
         {
             int newId = GetNextId();
@@ -54,20 +62,12 @@ namespace ToDo.Client.ViewModels
 
         public void DeleteItem()
         {
-            ToDoItem? itemToDelete = null;
-
-            if (SelectedItemId.HasValue)
+            if (SelectedItem != null)
             {
-                itemToDelete = ToDoItems.FirstOrDefault(item => item.Id == SelectedItemId.Value);
-            }
-
-            if (itemToDelete != null)
-            {
-                ToDoItems.Remove(itemToDelete);
+                ToDoItems.Remove(SelectedItem);
                 SelectFirstItem();
                 UpdateCurrentDayData();
             }
-
         }
 
         public int GetNextId()
@@ -77,6 +77,7 @@ namespace ToDo.Client.ViewModels
         private void SelectFirstItem()
         {
             SelectedItemId = ToDoItems.Any() ? CurrentDayItems.Min(item => (int?)item.Id) : null; // Select the first item
+            SelectItem();
         }
 
         public void SetPreviousDay()
