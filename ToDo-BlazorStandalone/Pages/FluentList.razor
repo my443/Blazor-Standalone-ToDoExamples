@@ -1,0 +1,62 @@
+﻿@page "/fluentlist"
+@using ToDo.Client.Data
+@using ToDo.Client.Models
+@using ToDo.Client.ViewModels
+@using Microsoft.FluentUI.AspNetCore.Components
+
+<h3>List With Date</h3>
+<button @onclick="ViewModel.AddItem">Add Item</button>
+<button @onclick="ViewModel.DeleteItem">Delete Item</button>
+<InputDate id="datepicker" @bind-Value="ViewModel.SelectedDate" class="form-control" style="width:200px" />
+<button @onclick="ViewModel.SetPreviousDay">Previous Day</button>
+<button @onclick="ViewModel.SetToday">Today</button>
+<button @onclick="ViewModel.SetNextDay">Next Day</button>
+
+<FluentDataGrid Items="@ViewModel.CurrentDayItems.AsQueryable()" AutoGenerateColumns="false">
+    <TemplateColumn Sortable="true">
+
+        <FluentCheckbox @bind-Checked="context.IsDone"  />
+
+    </TemplateColumn>
+    <PropertyColumn Property="@(p => p.Title)" Sortable="true" />
+</FluentDataGrid>
+
+
+<table>
+    @foreach (var item in ViewModel.CurrentDayItems)
+    {
+        <tr>
+            <td><InputCheckbox @bind-Value="item.IsDone" /></td>
+            <td><InputText @bind-Value="item.Title" /></td>
+            <td>
+                <InputRadioGroup @bind-Value="ViewModel.SelectedItemId" Name="Selected">
+                    <InputRadio Value="@item.Id" />
+                </InputRadioGroup>
+            </td>
+        </tr>
+    }
+</table>
+<p>Selected Item ID: @ViewModel.SelectedItemId</p>
+
+<h4>Details Of Selected Item</h4>
+<InputTextArea @bind-Value="ViewModel.SelectedItem.Details">@ViewModel.SelectedItem.Details</InputTextArea>
+
+
+<h4>Items</h4>
+
+<ul>
+    @foreach (var item in ViewModel.ToDoItems)
+    {
+        <li>@item.Id / @item.Title / @item.IsDone // @item.ItemDate // @item.Details</li>
+    }
+</ul>
+@code {
+    public FluentViewModel ViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ViewModel = new FluentViewModel();
+    }
+
+
+}
