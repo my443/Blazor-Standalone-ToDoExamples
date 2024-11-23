@@ -10,11 +10,12 @@ namespace ToDo.Client.ViewModels
         public List<ToDoItem> ToDoItems;
         public List<ToDoItem> CurrentDayItems;
 
-
-
         private DateOnly _selectedDate;
         private ToDoItem _selectedItem;
         private int? _selectedItemId;
+
+        // Event to notify the Blazor component of state changes
+        public event Action? StateChanged;
 
         public ToDoItem SelectedItem
         {
@@ -23,6 +24,7 @@ namespace ToDo.Client.ViewModels
             {
                 if (_selectedItem != value)
                 { _selectedItem = value; }
+                NotifyStateChanged();
             }
         }
 
@@ -129,5 +131,11 @@ namespace ToDo.Client.ViewModels
             SelectFirstItem();
             //StateHasChanged();
         }
+
+        private void NotifyStateChanged()
+        {
+            StateChanged?.Invoke(); // Notify subscribers (e.g., Blazor component)
+        }
+
     }
 }

@@ -3,6 +3,7 @@
 @using ToDo.Client.Models
 @using ToDo.Client.ViewModels
 @using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.DataGrid
 
 <h3>List With Date</h3>
 <button @onclick="ViewModel.AddItem">Add Item</button>
@@ -12,16 +13,23 @@
 <button @onclick="ViewModel.SetToday">Today</button>
 <button @onclick="ViewModel.SetNextDay">Next Day</button>
 
-<FluentDataGrid Items="@ViewModel.CurrentDayItems.AsQueryable()" AutoGenerateColumns="false">
-    <TemplateColumn Sortable="true">
+<div class="row">
+    <div class="col-8">
+        <FluentDataGrid Items="@ViewModel.CurrentDayItems.AsQueryable()" AutoGenerateColumns="false" SelectionMode="SelectionMode.Single"
+                        SelectedItems="SelectedItem">
+            <TemplateColumn Sortable="true">
+                <FluentCheckbox @bind-Value="context.IsDone" />
+            </TemplateColumn>
+            <PropertyColumn Property="@(p => p.Title)" Sortable="true" />
+        </FluentDataGrid>
+    </div>
+    <div class="col-4">
+        <h4>Details Of Selected Item</h4>
+        <InputTextArea @bind-Value="ViewModel.SelectedItem.Details" style="height:100%;width:100%">@ViewModel.SelectedItem.Details</InputTextArea>
+    </div>
+</div>
 
-        <FluentCheckbox @bind-Checked="context.IsDone"  />
-
-    </TemplateColumn>
-    <PropertyColumn Property="@(p => p.Title)" Sortable="true" />
-</FluentDataGrid>
-
-
+<p>Selected Item ID: @ViewModel.SelectedItemId</p>
 <table>
     @foreach (var item in ViewModel.CurrentDayItems)
     {
@@ -36,10 +44,6 @@
         </tr>
     }
 </table>
-<p>Selected Item ID: @ViewModel.SelectedItemId</p>
-
-<h4>Details Of Selected Item</h4>
-<InputTextArea @bind-Value="ViewModel.SelectedItem.Details">@ViewModel.SelectedItem.Details</InputTextArea>
 
 
 <h4>Items</h4>
@@ -56,7 +60,20 @@
     protected override async Task OnInitializedAsync()
     {
         ViewModel = new FluentViewModel();
+        ViewModel.StateChanged += OnStateChanged;       // Subscribe to StateChanged property.
     }
+
+    private void OnStateChanged()
+    {
+        InvokeAsync(StateHasChanged); // Ensure it runs on the UI thread
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to prevent memory leaks
+        ViewModel.StateChanged -= OnStateChanged;
+    }
+
 
 
 }
