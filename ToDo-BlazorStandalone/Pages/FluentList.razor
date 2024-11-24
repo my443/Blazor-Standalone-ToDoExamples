@@ -16,11 +16,19 @@
 <div class="row">
     <div class="col-8">
         <FluentDataGrid Items="@ViewModel.CurrentDayItems.AsQueryable()" AutoGenerateColumns="false" SelectionMode="SelectionMode.Single"
-                        SelectedItems="SelectedItem">
-            <TemplateColumn Sortable="true">
-                <FluentCheckbox @bind-Value="context.IsDone" />
-            </TemplateColumn>
-            <PropertyColumn Property="@(p => p.Title)" Sortable="true" />
+        SelectedItems="SelectedItem">
+            <DataGridColumns>
+                <TemplateColumn Sortable="true">
+                    <FluentCheckbox @bind-Value="context.IsDone" />
+                </TemplateColumn>
+                <PropertyColumn Property="@(p => p.Title)" Sortable="true" />
+                <!-- Select item column -->
+                <TemplateColumn>
+                    <InputRadioGroup @bind-Value="ViewModel.SelectedItemId" Name="SelectedItemGroup">
+                        <InputRadio Value="context.Id" />
+                    </InputRadioGroup>
+                </TemplateColumn>
+            </DataGridColumns>
         </FluentDataGrid>
     </div>
     <div class="col-4">
@@ -56,6 +64,8 @@
 </ul>
 @code {
     public FluentViewModel ViewModel;
+    public string color = "background-color: lightblue;";
+    public string none = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,6 +84,9 @@
         ViewModel.StateChanged -= OnStateChanged;
     }
 
-
+    private void SelectRow(int id)
+    {
+        ViewModel.SelectedItemId = id;
+    }
 
 }
